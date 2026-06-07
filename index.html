@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文單字寵物村 Word Pet Village</title>
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --background: #F7FFF7;
+            --text: #2F3E46;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', '微軟正黑體', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            border: 4px solid #FFE66D;
+            text-align: center;
+            position: relative;
+        }
+        h1 { color: var(--primary); margin-top: 0; }
+        
+        /* 寵物狀態區 */
+        .pet-stage {
+            background: #E8F1F2;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .pet-avatar {
+            font-size: 80px;
+            margin: 10px 0;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .status-bar {
+            background: #ddd;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px auto;
+            width: 80%;
+            overflow: hidden;
+        }
+        .progress {
+            background: linear-gradient(90deg, #FF6B6B, #FFE66D);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        /* 題目與按鈕區 */
+        .quiz-box {
+            background: #FFF;
+            border: 2px dashed var(--secondary);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .word-display {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2B2D42;
+            margin-bottom: 5px;
+        }
+        .audio-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid #CED4DA;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+        
+        /* 回饋與控制按鈕 */
+        .feedback {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            height: 25px;
+        }
+        .reset-btn {
+            background-color: #e0e0e0;
+            color: #666;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+        .reset-btn:hover {
+            background-color: #FF6B6B;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>🐾 英文單字寵物村</h1>
+    
+    <div class="pet-stage">
+        <div id="pet-title" style="font-weight: bold; color: #555;">載入中...</div>
+        <div id="pet-avatar" class="pet-avatar">🥚</div>
+        <div>學會單字量：<span id="score">0</span> / <span id="total-words">0</span></div>
+        <div class="status-bar">
+            <div id="progress-bar" class="progress"></div>
+        </div>
+    </div>
+
+    <div class="quiz-box">
+        <div id="word-text" class="word-display">---</div>
+        <button onclick="speakWord()" class="audio-btn" title="聽發音">🔊 點我聽發音</button>
+        
+        <div class="options-grid">
+            <button class="option-btn" onclick="checkAnswer(0)">選項 1</button>
+            <button class="option-btn" onclick="checkAnswer(1)">選項 2</button>
+            <button class="option-btn" onclick="checkAnswer(2)">選項 3</button>
+            <button class="option-btn" onclick="checkAnswer(3)">選項 4</button>
+        </div>
+        <div id="feedback-text" class="feedback"></div>
+    </div>
+
+    <button class="reset-btn" onclick="resetGame()">🔄 重設遊戲進度（清除記憶）</button>
+</div>
+
+<script>
+// 1. 完整的 300 個國小必學單字庫
+const wordBank = [
+    // === 1. 大自然與天氣 (Nature & Weather) ===
+    {word: "sun", ch: "太陽"}, {word: "moon", ch: "月亮"}, {word: "star", ch: "星星"}, {word: "sky", ch: "天空"},
+    {word: "cloud", ch: "雲"}, {word: "rain", ch: "下雨"}, {word: "wind", ch: "風"}, {word: "snow", ch: "雪"},
+    {word: "sea", ch: "大海"}, {word: "river", ch: "河流"}, {word: "tree", ch: "樹木"}, {word: "flower", ch: "花朵"},
+    {word: "grass", ch: "草"}, {word: "stone", ch: "石頭"}, {word: "hot", ch: "熱的"}, {word: "cold", ch: "冷的"},
+    {word: "warm", ch: "溫暖的"}, {word: "cool", ch: "涼爽的"}, {word: "weather", ch: "天氣"}, {word: "air", ch: "空氣"},
+
+    // === 2. 溫馨家庭與稱呼 (Family & People) ===
+    {word: "family", ch: "家人"}, {word: "father", ch: "爸爸"}, {word: "mother", ch: "媽媽"}, {word: "brother", ch: "兄弟"},
+    {word: "sister", ch: "姊妹"}, {word: "grandfather", ch: "爺爺/外公"}, {word: "grandmother", ch: "奶奶/外婆"}, {word: "uncle", ch: "叔伯舅舅"},
+    {word: "aunt", ch: "姑姑阿姨"}, {word: "cousin", ch: "堂表兄弟姊妹"}, {word: "son", ch: "兒子"}, {word: "daughter", ch: "女兒"},
+    {word: "baby", ch: "嬰兒"}, {word: "friend", ch: "朋友"}, {word: "boy", ch: "男孩"}, {word: "girl", ch: "女孩"},
+    {word: "man", ch: "男人"}, {word: "woman", ch: "女人"}, {word: "people", ch: "人們"}, {word: "name", ch: "名字"},
+
+    // === 3. 可愛動物與昆蟲 (Animals & Insects) ===
+    {word: "dog", ch: "狗狗"}, {word: "cat", ch: "貓咪"}, {word: "rabbit", ch: "兔子"}, {word: "bird", ch: "小鳥"},
+    {word: "fish", ch: "魚"}, {word: "monkey", ch: "猴子"}, {word: "elephant", ch: "大象"}, {word: "lion", ch: "獅子"},
+    {word: "tiger", ch: "老虎"}, {word: "bear", ch: "熊"}, {word: "horse", ch: "馬"}, {word: "cow", ch: "乳牛"},
+    {word: "pig", ch: "豬"}, {word: "sheep", ch: "綿羊"}, {word: "duck", ch: "鴨子"}, {word: "chicken", ch: "雞"},
+    {word: "mouse", ch: "老鼠"}, {word: "frog", ch: "青蛙"}, {word: "bee", ch: "蜜蜂"}, {word: "ant", ch: "螞蟻"},
+
+    // === 4. 美味食物與飲料 (Food & Drinks) ===
+    {word: "rice", ch: "米飯"}, {word: "bread", ch: "麵包"}, {word: "noodles", ch: "麵條"}, {word: "soup", ch: "湯"},
+    {word: "meat", ch: "肉"}, {word: "chicken", ch: "雞肉"}, {word: "fish", ch: "魚肉"}, {word: "egg", ch: "蛋"},
+    {word: "cake", ch: "蛋糕"}, {word: "cookie", ch: "餅乾"}, {word: "ice cream", ch: "冰淇淋"}, {word: "candy", ch: "糖果"},
+    {word: "milk", ch: "牛奶"}, {word: "water", ch: "水"}, {word: "juice", ch: "果汁"}, {word: "tea", ch: "茶"},
+    {word: "breakfast", ch: "早餐"}, {word: "lunch", ch: "午餐"}, {word: "dinner", ch: "晚餐"}, {word: "food", ch: "食物"},
+
+    // === 5. 健康水果與蔬菜 (Fruits & Vegetables) ===
+    {word: "apple", ch: "蘋果"}, {word: "banana", ch: "香蕉"}, {word: "orange", ch: "橘子"}, {word: "grape", ch: "葡萄"},
+    {word: "strawberry", ch: "草莓"}, {word: "watermelon", ch: "西瓜"}, {word: "lemon", ch: "檸檬"}, {word: "peach", ch: "桃子"},
+    {word: "pear", ch: "梨子"}, {word: "tomato", ch: "番茄"}, {word: "potato", ch: "馬鈴薯"}, {word: "carrot", ch: "紅蘿蔔"},
+    {word: "onion", ch: "洋蔥"}, {word: "corn", ch: "玉米"}, {word: "fruit", ch: "水果"}, {word: "vegetable", ch: "蔬菜"},
+    {word: "sweet", ch: "甜的"}, {word: "sour", ch: "酸的"}, {word: "yummy", ch: "美味的"}, {word: "hungry", ch: "飢餓的"},
+
+    // === 6. 學校與文具用品 (School & Stationery) ===
+    {word: "school", ch: "學校"}, {word: "class", ch: "班級"}, {word: "teacher", ch: "老師"}, {word: "student", ch: "學生"},
+    {word: "book", ch: "書本"}, {word: "pencil", ch: "鉛筆"}, {word: "pen", ch: "原子筆"}, {word: "eraser", ch: "橡皮擦"},
+    {word: "ruler", ch: "尺"}, {word: "bag", ch: "包包/書包"}, {word: "desk", ch: "書桌"}, {word: "chair", ch: "椅子"},
+    {word: "paper", ch: "紙張"}, {word: "map", ch: "地圖"}, {word: "computer", ch: "電腦"}, {word: "homework", ch: "作業"},
+    {word: "english", ch: "英文"}, {word: "math", ch: "數學"}, {word: "music", ch: "音樂"}, {word: "art", ch: "美術"},
+
+    // === 7. 身體部位 (Body Parts) ===
+    {word: "body", ch: "身體"}, {word: "head", ch: "頭"}, {word: "hair", ch: "頭髮"}, {word: "face", ch: "臉"},
+    {word: "eye", ch: "眼睛"}, {word: "ear", ch: "耳朵"}, {word: "nose", ch: "鼻子"}, {word: "mouth", ch: "嘴巴"},
+    {word: "tooth", ch: "牙齒"}, {word: "neck", ch: "脖子"}, {word: "shoulder", ch: "肩膀"}, {word: "arm", ch: "手臂"},
+    {word: "hand", ch: "手"}, {word: "finger", ch: "手指"}, {word: "leg", ch: "腿"}, {word: "knee", ch: "膝蓋"},
+    {word: "foot", ch: "腳(單數)"}, {word: "feet", ch: "腳(複數)"}, {word: "heart", ch: "心臟"}, {word: "tall", ch: "高的"},
+
+    // === 8. 居家生活與服飾 (Home & Clothes) ===
+    {word: "home", ch: "家"}, {word: "house", ch: "房子"}, {word: "room", ch: "房間"}, {word: "bedroom", ch: "臥室"},
+    {word: "bathroom", ch: "浴室"}, {word: "kitchen", ch: "廚房"}, {word: "door", ch: "門"}, {word: "window", ch: "窗戶"},
+    {word: "bed", ch: "床"}, {word: "table", ch: "桌子"}, {word: "tv", ch: "電視"}, {word: "telephone", ch: "電話"},
+    {word: "clothes", ch: "衣服"}, {word: "shirt", ch: "襯衫"}, {word: "pants", ch: "褲子"}, {word: "skirt", ch: "裙子"},
+    {word: "coat", ch: "外套"}, {word: "shoes", ch: "鞋子"}, {word: "socks", ch: "襪子"}, {word: "hat", ch: "帽子"},
+
+    // === 9. 交通工具與地點 (Transportation & Places) ===
+    {word: "car", ch: "汽車"}, {word: "bus", ch: "公車"}, {word: "bike", ch: "腳踏車"}, {word: "train", ch: "火車"},
+    {word: "ship", ch: "船"}, {word: "plane", ch: "飛機"}, {word: "taxi", ch: "計程車"}, {word: "truck", ch: "卡車"},
+    {word: "stop", ch: "車站/停止"}, {word: "park", ch: "公園"}, {word: "zoo", ch: "動物園"}, {word: "shop", ch: "商店"},
+    {word: "market", ch: "市場"}, {word: "hospital", ch: "醫院"}, {word: "bank", ch: "銀行"}, {word: "library", ch: "圖書館"},
+    {word: "farm", ch: "農場"}, {word: "street", ch: "街道"}, {word: "city", ch: "城市"}, {word: "town", ch: "小鎮"},
+
+    // === 10. 數字魔法 (Numbers 1-20) ===
+    {word: "one", ch: "一"}, {word: "two", ch: "二"}, {word: "three", ch: "三"}, {word: "four", ch: "四"},
+    {word: "five", ch: "五"}, {word: "six", ch: "六"}, {word: "seven", ch: "七"}, {word: "eight", ch: "八"},
+    {word: "nine", ch: "九"}, {word: "ten", ch: "十"}, {word: "eleven", ch: "十一"}, {word: "twelve", ch: "十二"},
+    {word: "thirteen", ch: "十三"}, {word: "fourteen", ch: "十四"}, {word: "fifteen", ch: "十五"}, {word: "sixteen", ch: "十六"},
+    {word: "seventeen", ch: "十七"}, {word: "eighteen", ch: "十八"}, {word: "nineteen", ch: "十九"}, {word: "twenty", ch: "二十"},
+
+    // === 11. 彩虹顏色與形狀 (Colors & Shapes) ===
+    {word: "red", ch: "紅色"}, {word: "blue", ch: "藍色"}, {word: "yellow", ch: "黃色"}, {word: "green", ch: "綠色"},
+    {word: "orange", ch: "橘色"}, {word: "purple", ch: "紫色"}, {word: "pink", ch: "粉紅色"}, {word: "black", ch: "黑色"},
+    {word: "white", ch: "白色"}, {word: "brown", ch: "棕色"}, {word: "gray", ch: "灰色"}, {word: "color", ch: "顏色"},
+    {word: "circle", ch: "圓形"}, {word: "square", ch: "正方形"}, {word: "line", ch: "線條"}, {word: "star", ch: "星形"},
+    {word: "big", ch: "大的"}, {word: "small", ch: "小的"}, {word: "long", ch: "長的"}, {word: "short", ch: "短的/矮的"},
+
+    // === 12. 時間、星期與季節 (Time & Seasons) ===
+    {word: "time", ch: "時間"}, {word: "clock", ch: "時鐘"}, {word: "year", ch: "年"}, {word: "month", ch: "月"},
+    {word: "week", ch: "星期"}, {word: "day", ch: "日子/白天"}, {word: "night", ch: "夜晚"}, {word: "morning", ch: "早上"},
+    {word: "afternoon", ch: "下午"}, {word: "evening", ch: "傍晚"}, {word: "today", ch: "今天"}, {word: "yesterday", ch: "昨天"},
+    {word: "tomorrow", ch: "明天"}, {word: "spring", ch: "春天"}, {word: "summer", ch: "夏天"}, {word: "autumn", ch: "秋天"},
+    {word: "winter", ch: "冬天"}, {word: "weekend", ch: "週末"}, {word: "now", ch: "現在"}, {word: "hour", ch: "小時"},
+
+    // === 13. 心情與形容詞 (Feelings & Adjectives) ===
+    {word: "happy", ch: "快樂的"}, {word: "sad", ch: "傷心的"}, {word: "angry", ch: "生氣的"}, {word: "tired", ch: "疲倦的"},
+    {word: "scared", ch: "害怕的"}, {word: "good", ch: "好的"}, {word: "bad", ch: "壞的"}, {word: "beautiful", ch: "美麗的"},
+    {word: "ugly", ch: "醜陋的"}, {word: "clean", ch: "乾淨的"}, {word: "dirty", ch: "髒的"}, {word: "new", ch: "新的"},
+    {word: "old", ch: "舊的/老的"}, {word: "fast", ch: "快的"}, {word: "slow", ch: "慢的"}, {word: "easy", ch: "容易的"},
+    {word: "hard", ch: "困難的/堅硬的"}, {word: "heavy", ch: "重的"}, {word: "light", ch: "輕的/光線"}, {word: "brave", ch: "勇敢的"},
+
+    // === 14. 基礎動詞 - 動作篇 (Verbs: Actions) ===
+    {word: "run", ch: "跑步"}, {word: "jump", ch: "跳躍"}, {word: "walk", ch: "走路"}, {word: "swim", ch: "游泳"},
+    {word: "fly", ch: "飛翔"}, {word: "dance", ch: "跳舞"}, {word: "sing", ch: "唱歌"}, {word: "play", ch: "玩耍/彈奏"},
+    {word: "eat", ch: "吃"}, {word: "drink", ch: "喝"}, {word: "sleep", ch: "睡覺"}, {word: "wash", ch: "洗"},
+    {word: "clean", ch: "打掃"}, {word: "open", ch: "打開"}, {word: "close", ch: "關上"}, {word: "push", ch: "推"},
+    {word: "pull", ch: "拉"}, {word: "stop", ch: "停止"}, {word: "climb", ch: "攀爬"}, {word: "ride", ch: "騎(車/馬)"},
+
+    // === 15. 基礎動詞 - 認知與日常生活篇 (Verbs: Life & Mind) ===
+    {word: "see", ch: "看見"}, {word: "look", ch: "看"}, {word: "hear", ch: "聽見"}, {word: "listen", ch: "聽"},
+    {word: "speak", ch: "說話"}, {word: "say", ch: "說"}, {word: "talk", ch: "交談"}, {word: "read", ch: "閱讀"},
+    {word: "write", ch: "寫字"}, {word: "draw", ch: "畫畫"}, {word: "know", ch: "知道"}, {word: "think", ch: "思考/認為"},
+    {word: "learn", ch: "學習"}, {word: "study", ch: "研讀"}, {word: "love", ch: "愛"}, {word: "like", ch: "喜歡"},
+    {word: "want", ch: "想要"}, {word: "help", ch: "幫助"}, {word: "work", ch: "工作"}, {word: "live", ch: "居住/生活"}
+];
+
+// 核心狀態
+let learnedWords = new Set();
+let currentQuestion = null;
+let currentOptions = [];
+
+document.getElementById("total-words").innerText = wordBank.length;
+
+// 2. 遊戲初始化（從 LocalStorage 讀取進度）
+function initGame() {
+    const savedData = localStorage.getItem("wordPetSaveData");
+    if (savedData) {
+        try {
+            const parsedArray = JSON.parse(savedData);
+            learnedWords = new Set(parsedArray);
+        } catch (e) {
+            console.error("讀取存檔失敗，重新初始化", e);
+            learnedWords = new Set();
+        }
+    }
+    
+    generateQuestion();
+    updateUI();
+}
+
+// 3. 儲存進度至 LocalStorage
+function saveGame() {
+    const dataArray = Array.from(learnedWords);
+    localStorage.setItem("wordPetSaveData", JSON.stringify(dataArray));
+}
+
+// 4. 重設遊戲進度
+function resetGame() {
+    if (confirm("確定要刪除所有進度，讓寵物重新投胎嗎？😱")) {
+        localStorage.removeItem("wordPetSaveData");
+        learnedWords = new Set();
+        alert("進度已清除！重新開始冒險吧！");
+        initGame();
+    }
+}
+
+// 5. 產生新題目
+function generateQuestion() {
+    if (learnedWords.size >= wordBank.length) {
+        document.getElementById("word-text").innerText = "🏆 大滿貫！";
+        document.getElementById("feedback-text").style.color = "#FF6B6B";
+        document.getElementById("feedback-text").innerText = "恭喜！你把所有的單字怪獸都收服了！";
+        return;
+    }
+
+    // 挑選一個還沒學會的字
+    let unlearned = wordBank.filter(w => !learnedWords.has(w.word));
+    if (unlearned.length === 0) unlearned = wordBank; 
+    
+    currentQuestion = unlearned[Math.floor(Math.random() * unlearned.length)];
+    
+    // 製作四選一選項
+    let wrongOptions = wordBank.filter(w => w.ch !== currentQuestion.ch).map(w => w.ch);
+    wrongOptions.sort(()
