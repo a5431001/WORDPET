@@ -325,4 +325,81 @@ function generateQuestion() {
     
     // 製作四選一選項
     let wrongOptions = wordBank.filter(w => w.ch !== currentQuestion.ch).map(w => w.ch);
-    wrongOptions.sort(()
+    wrongOptions.sort(() => 0.5 - Math.random());
+    
+    currentOptions = [currentQuestion.ch, wrongOptions[0], wrongOptions[1], wrongOptions[2]];
+    currentOptions.sort(() => 0.5 - Math.random()); 
+    
+    // 更新網頁畫面
+    document.getElementById("word-text").innerText = currentQuestion.word;
+    const buttons = document.querySelectorAll(".option-btn");
+    buttons.forEach((btn, index) => {
+        btn.innerText = currentOptions[index];
+    });
+    
+    speakWord();
+}
+
+// 6. 語音朗讀功能
+function speakWord() {
+    if (!currentQuestion) return;
+    const utterance = new SpeechSynthesisUtterance(currentQuestion.word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.85; 
+    window.speechSynthesis.speak(utterance);
+}
+
+// 7. 檢查答案並觸發自動存檔
+function checkAnswer(selectedIndex) {
+    const feedback = document.getElementById("feedback-text");
+    if (currentOptions[selectedIndex] === currentQuestion.ch) {
+        feedback.style.color = "#4ECDC4";
+        feedback.innerText = "🎉 答對了！寵物開心地吃著點心 🍪";
+        
+        learnedWords.add(currentQuestion.word);
+        saveGame();
+    } else {
+        feedback.style.color = "#FF6B6B";
+        feedback.innerText = `❌ 答錯囉！【${currentQuestion.word}】是 ${currentQuestion.ch}`;
+    }
+    
+    updateUI();
+    
+    setTimeout(() => {
+        feedback.innerText = "";
+        generateQuestion();
+    }, 1500);
+}
+
+// 8. 更新畫面與寵物狀態 (配合300個字調整階段)
+function updateUI() {
+    const count = learnedWords.size;
+    document.getElementById("score").innerText = count;
+    
+    const percent = (count / wordBank.length) * 100;
+    document.getElementById("progress-bar").style.width = `${percent}%`;
+    
+    const avatar = document.getElementById("pet-avatar");
+    const title = document.getElementById("pet-title");
+    
+    if (count >= 250) {
+        avatar.innerText = "🐉";
+        title.innerText = "等級 4：終極飛天巨龍 👑 (神話階段)";
+    } else if (count >= 120) {
+        avatar.innerText = "🐕";
+        title.innerText = "等級 3：忠誠戰鬥犬 💪 (成長期)";
+    } else if (count >= 30) {
+        avatar.innerText = "🐥";
+        title.innerText = "等級 2：可愛小雞怪 🐤 (幼年期)";
+    } else {
+        avatar.innerText = "🥚";
+        title.innerText = "等級 1：萌萌單字蛋 💤 (孵化期)";
+    }
+}
+
+// 啟動遊戲
+initGame();
+</script>
+
+</body>
+</html>
