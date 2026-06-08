@@ -54,7 +54,7 @@
             display: inline-block;
         }
         @keyframes wild_bounce {
-            0%, 100 canvas { transform: translateY(0); }
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
         .quiz-box {
@@ -145,4 +145,263 @@
 
 <div class="game-container">
     
-    <div id="current-stage-display" class="stage-info">載入
+    <div id="current-stage-display" class="stage-info">載入中...</div>
+
+    <div class="battle-stage">
+        <div><span id="monster-emoji" class="monster-avatar">❓</span></div>
+        <div style="font-size: 14px; color: #555; font-weight: bold;">
+            當前關卡進度：<span id="stage-score" style="color:#3B4CCA; font-size:16px;">0</span> / 50 隻
+        </div>
+    </div>
+
+    <div class="quiz-box">
+        <div id="word-text" class="word-display">---</div>
+        <button onclick="speakWord()" class="audio-btn">🔊 再聽一次發音</button>
+        
+        <div class="options-grid">
+            <button class="option-btn" onclick="checkAnswer(0)">選項 1</button>
+            <button class="option-btn" onclick="checkAnswer(1)">選項 2</button>
+            <button class="option-btn" onclick="checkAnswer(2)">選項 3</button>
+            <button class="option-btn" onclick="checkAnswer(3)">選項 4</button>
+        </div>
+        <div id="feedback-text" class="feedback"></div>
+    </div>
+
+    <div class="collection-box">
+        <div class="collection-title">
+            <span>🎒 我的總寵物圖鑑背包</span>
+            <span id="bag-count" style="color: #6B7280;">0 / 300 隻</span>
+        </div>
+        <div id="bag-grid" class="grid-bag"></div>
+    </div>
+
+    <button class="reset-btn" onclick="resetGame()">放生所有寵物（重設進度）</button>
+</div>
+
+<script>
+const wordBank = [
+    {word: "sun", ch: "太陽", icon: "☀️"}, {word: "moon", ch: "月亮", icon: "🌙"}, {word: "star", ch: "星星", icon: "⭐"}, {word: "sky", ch: "天空", icon: "🌌"},
+    {word: "cloud", ch: "雲", icon: "☁️"}, {word: "rain", ch: "下雨", icon: "🌧️"}, {word: "wind", ch: "風", icon: "💨"}, {word: "snow", ch: "雪", icon: "❄️"},
+    {word: "sea", ch: "大海", icon: "🌊"}, {word: "river", ch: "河流", icon: "🏞️"}, {word: "tree", ch: "樹木", icon: "🌳"}, {word: "flower", ch: "花朵", icon: "🌻"},
+    {word: "grass", ch: "草", icon: "🌱"}, {word: "stone", ch: "石頭", icon: "🪨"}, {word: "hot", ch: "熱的", icon: "🥵"}, {word: "cold", ch: "冷的", icon: "🥶"},
+    {word: "warm", ch: "溫暖的", icon: "🥰"}, {word: "cool", ch: "涼爽的", icon: "😎"}, {word: "weather", ch: "天氣", icon: "🌈"}, {word: "air", ch: "空氣", icon: "🍃"},
+    {word: "family", ch: "家人", icon: "👨‍👩‍👧‍👦"}, {word: "father", ch: "爸爸", icon: "👨"}, {word: "mother", ch: "媽媽", icon: "👩"}, {word: "brother", ch: "兄弟", icon: "👦"},
+    {word: "sister", ch: "姊妹", icon: "👧"}, {word: "grandfather", ch: "爺爺/外公", icon: "👴"}, {word: "grandmother", ch: "奶奶/外婆", icon: "👵"}, {word: "uncle", ch: "叔伯舅舅", icon: "🧔"},
+    {word: "aunt", ch: "姑姑阿姨", icon: "👩‍🦰"}, {word: "cousin", ch: "堂表兄弟", icon: "🧑"}, {word: "son", ch: "兒子", icon: "👶"}, {word: "daughter", ch: "女兒", icon: "👱‍♀️"},
+    {word: "baby", ch: "嬰兒", icon: "🍼"}, {word: "friend", ch: "朋友", icon: "🤝"}, {word: "boy", ch: "男孩", icon: "🧒"}, {word: "girl", ch: "女孩", icon: "👧"},
+    {word: "man", ch: "男人", icon: "👨‍💼"}, {word: "woman", ch: "女人", icon: "👩‍💼"}, {word: "people", ch: "人們", icon: "👥"}, {word: "name", ch: "名字", icon: "📛"},
+    {word: "dog", ch: "狗狗", icon: "🐶"}, {word: "cat", ch: "貓咪", icon: "🐱"}, {word: "rabbit", ch: "兔子", icon: "🐰"}, {word: "bird", ch: "小鳥", icon: "🐦"},
+    {word: "fish", ch: "魚", icon: "🐟"}, {word: "monkey", ch: "猴子", icon: "🐵"}, {word: "elephant", ch: "大象", icon: "🐘"}, {word: "lion", ch: "獅子", icon: "🦁"},
+    {word: "tiger", ch: "老虎", icon: "🐯"}, {word: "bear", ch: "熊", icon: "🐻"},
+    {word: "horse", ch: "馬", icon: "🐴"}, {word: "cow", ch: "乳牛", icon: "🐮"}, {word: "pig", ch: "豬", icon: "🐷"}, {word: "sheep", ch: "綿羊", icon: "🐑"}, 
+    {word: "duck", ch: "鴨子", icon: "🦆"}, {word: "chicken", ch: "雞", icon: "🐔"}, {word: "mouse", ch: "老鼠", icon: "🐭"}, {word: "frog", ch: "青蛙", icon: "🐸"}, 
+    {word: "bee", ch: "蜜蜂", icon: "🐝"}, {word: "ant", ch: "螞蟻", icon: "🐜"}, {word: "rice", ch: "米飯", icon: "🍚"}, {word: "bread", ch: "麵包", icon: "🍞"}, 
+    {word: "noodles", ch: "麵條", icon: "🍜"}, {word: "soup", ch: "湯", icon: "🥣"}, {word: "meat", ch: "肉", icon: "🥩"}, {word: "chicken", ch: "雞肉", icon: "🍗"}, 
+    {word: "fish", ch: "魚肉", icon: "🍤"}, {word: "egg", ch: "蛋", icon: "🍳"}, {word: "cake", ch: "蛋糕", icon: "🍰"}, {word: "cookie", ch: "餅乾", icon: "🍪"},
+    {word: "ice cream", ch: "冰淇淋", icon: "🍦"}, {word: "candy", ch: "糖果", icon: "🍬"}, {word: "milk", ch: "牛奶", icon: "🥛"}, {word: "water", ch: "水", icon: "💧"}, 
+    {word: "juice", ch: "果汁", icon: "🧃"}, {word: "tea", ch: "茶", icon: "🍵"}, {word: "breakfast", ch: "早餐", icon: "🥞"}, {word: "lunch", ch: "午餐", icon: "🥪"}, 
+    {word: "dinner", ch: "晚餐", icon: "🍽️"}, {word: "food", ch: "食物", icon: "🍕"}, {word: "apple", ch: "蘋果", icon: "🍎"}, {word: "banana", ch: "香蕉", icon: "🍌"}, 
+    {word: "orange", ch: "橘子", icon: "🍊"}, {word: "grape", ch: "葡萄", icon: "🍇"}, {word: "strawberry", ch: "草莓", icon: "🍓"}, {word: "watermelon", ch: "西瓜", icon: "🍉"}, 
+    {word: "lemon", ch: "檸檬", icon: "🍋"}, {word: "peach", ch: "桃子", icon: "🍑"}, {word: "pear", ch: "梨子", icon: "🍐"}, {word: "tomato", ch: "番茄", icon: "🍅"},
+    {word: "potato", ch: "馬鈴薯", icon: "🥔"}, {word: "carrot", ch: "紅蘿蔔", icon: "🥕"}, {word: "onion", ch: "洋蔥", icon: "🧅"}, {word: "corn", ch: "玉米", icon: "🌽"}, 
+    {word: "fruit", ch: "水果", icon: "🍒"}, {word: "vegetable", ch: "蔬菜", icon: "🥦"}, {word: "sweet", ch: "甜的", icon: "🍯"}, {word: "sour", ch: "酸的", icon: "🧪"}, 
+    {word: "yummy", ch: "美味的", icon: "😋"}, {word: "hungry", ch: "飢餓的", icon: "🤤"},
+    {word: "school", ch: "學校", icon: "🏫"}, {word: "class", ch: "班級", icon: "👥"}, {word: "teacher", ch: "老師", icon: "👩‍🏫"}, {word: "student", ch: "學生", icon: "🧑‍🎓"},
+    {word: "book", ch: "書本", icon: "📖"}, {word: "pencil", ch: "鉛筆", icon: "✏️"}, {word: "pen", ch: "原子筆", icon: "🖊️"}, {word: "eraser", ch: "橡皮擦", icon: "🧽"},
+    {word: "ruler", ch: "尺", icon: "📏"}, {word: "bag", ch: "書包", icon: "🎒"}, {word: "desk", ch: "書桌", icon: "🪑"}, {word: "chair", ch: "椅子", icon: "🪘"},
+    {word: "paper", ch: "紙張", icon: "📄"}, {word: "map", ch: "地圖", icon: "🗺️"}, {word: "computer", ch: "電腦", icon: "💻"}, {word: "homework", ch: "作業", icon: "📝"},
+    {word: "english", ch: "英文", icon: "🔤"}, {word: "math", ch: "數學", icon: "📊"}, {word: "music", ch: "音樂", icon: "🎵"}, {word: "art", ch: "美術", icon: "🎨"},
+    {word: "body", ch: "身體", icon: "🧍"}, {word: "head", ch: "頭", icon: "👤"}, {word: "hair", ch: "頭髮", icon: "🦱"}, {word: "face", ch: "臉", icon: "😀"},
+    {word: "eye", ch: "眼睛", icon: "👁️"}, {word: "ear", ch: "耳朵", icon: "👂"}, {word: "nose", ch: "鼻子", icon: "👃"}, {word: "mouth", ch: "嘴巴", icon: "👄"},
+    {word: "tooth", ch: "牙齒", icon: "🦷"}, {word: "neck", ch: "脖子", icon: "🧣"}, {word: "shoulder", ch: "肩膀", icon: "🏋️"}, {word: "arm", ch: "手臂", icon: "💪"},
+    {word: "hand", ch: "手", icon: "✋"}, {word: "finger", ch: "手指", icon: "☝️"}, {word: "leg", ch: "腿", icon: "🦵"}, {word: "knee", ch: "膝蓋", icon: "🧎"},
+    {word: "foot", ch: "腳(單數)", icon: "🦶"}, {word: "feet", ch: "腳(複數)", icon: "🥾"}, {word: "heart", ch: "心臟", icon: "❤️"}, {word: "tall", ch: "高的", icon: "🦒"},
+    {word: "home", ch: "家", icon: "🏡"}, {word: "house", ch: "房子", icon: "🏠"}, {word: "room", ch: "房間", icon: "🚪"}, {word: "bedroom", ch: "臥室", icon: "🛏️"},
+    {word: "bathroom", ch: "浴室", icon: "🛁"}, {word: "kitchen", ch: "廚房", icon: "🍳"}, {word: "door", ch: "門", icon: "🚪"}, {word: "window", ch: "窗戶", icon: "🪟"},
+    {word: "bed", ch: "床", icon: "🛏️"}, {word: "table", ch: "桌子", icon: "🪟"},
+    {word: "tv", ch: "電視", icon: "📺"}, {word: "telephone", ch: "電話", icon: "☎️"}, {word: "clothes", ch: "衣服", icon: "👕"}, {word: "shirt", ch: "襯衫", icon: "👔"}, 
+    {word: "pants", ch: "褲子", icon: "👖"}, {word: "skirt", ch: "裙子", icon: "👗"}, {word: "coat", ch: "外套", icon: "🧥"}, {word: "shoes", ch: "鞋子", icon: "👟"}, 
+    {word: "socks", ch: "襪子", icon: "🧦"}, {word: "hat", ch: "帽子", icon: "🎩"}, {word: "car", ch: "汽車", icon: "🚗"}, {word: "bus", ch: "公車", icon: "🚌"}, 
+    {word: "bike", ch: "腳踏車", icon: "🚲"}, {word: "train", ch: "火車", icon: "🚋"}, {word: "ship", ch: "船", icon: "🚢"}, {word: "plane", ch: "飛機", icon: "✈️"}, 
+    {word: "taxi", ch: "計程車", icon: "🚕"}, {word: "truck", ch: "卡車", icon: "🚚"}, {word: "stop", ch: "車站", icon: "🛑"}, {word: "park", ch: "公園", icon: "🛝"}, 
+    {word: "zoo", ch: "動物園", icon: "🎪"}, {word: "shop", ch: "商店", icon: "🏪"}, {word: "market", ch: "市場", icon: "🛒"}, {word: "hospital", ch: "醫院", icon: "🏥"}, 
+    {word: "bank", ch: "銀行", icon: "🏦"}, {word: "library", ch: "圖書館", icon: "🏛️"}, {word: "farm", ch: "農場", icon: "🚜"}, {word: "street", ch: "街道", icon: "🛣️"}, 
+    {word: "city", ch: "城市", icon: "🏙️"}, {word: "town", ch: "小鎮", icon: "🏡"}, {word: "one", ch: "一", icon: "1️⃣"}, {word: "two", ch: "二", icon: "2️⃣"}, 
+    {word: "three", ch: "三", icon: "3️⃣"}, {word: "four", ch: "四", icon: "4️⃣"}, {word: "five", ch: "五", icon: "5️⃣"}, {word: "six", ch: "六", icon: "6️⃣"}, 
+    {word: "seven", ch: "七", icon: "7️⃣"}, {word: "eight", ch: "八", icon: "8️⃣"}, {word: "nine", ch: "九", icon: "9️⃣"}, {word: "ten", ch: "十", icon: "🔟"},
+    {word: "eleven", ch: "十一", icon: "♊"}, {word: "twelve", ch: "十二", icon: "🕛"}, {word: "thirteen", ch: "十三", icon: "🍀"}, {word: "fourteen", ch: "十四", icon: "⏳"}, 
+    {word: "fifteen", ch: "十五", icon: "🏮"}, {word: "sixteen", ch: "十六", icon: "🔮"}, {word: "seventeen", ch: "十七", icon: "⚡"}, {word: "eighteen", ch: "十八", icon: "🔞"}, 
+    {word: "nineteen", ch: "十九", icon: "🍷"}, {word: "twenty", ch: "二十", icon: "🪙"},
+    {word: "red", ch: "紅色", icon: "🔴"}, {word: "blue", ch: "藍色", icon: "🔵"}, {word: "yellow", ch: "黃色", icon: "🟡"}, {word: "green", ch: "綠色", icon: "🟢"},
+    {word: "orange", ch: "橘色", icon: "🟠"}, {word: "purple", ch: "紫色", icon: "🟣"}, {word: "pink", ch: "粉紅色", icon: "🌸"}, {word: "black", ch: "黑色", icon: "⚫"},
+    {word: "white", ch: "白色", icon: "⚪"}, {word: "brown", ch: "棕色", icon: "🟤"}, {word: "gray", ch: "灰色", icon: "🪙"}, {word: "color", ch: "顏色", icon: "🎨"},
+    {word: "circle", ch: "圓形", icon: "⭕"}, {word: "square", ch: "正方形", icon: "⬛"}, {word: "line", ch: "線條", icon: "➖"}, {word: "star", ch: "星形", icon: "⭐"},
+    {word: "big", ch: "大的", icon: "🐳"}, {word: "small", ch: "小的", icon: "🐜"}, {word: "long", ch: "長的", icon: "🐍"}, {word: "short", ch: "短/矮", icon: "🐥"},
+    {word: "time", ch: "時間", icon: "⌚"}, {word: "clock", ch: "時鐘", icon: "⏰"}, {word: "year", ch: "年", icon: "📅"}, {word: "month", ch: "月", icon: "🌙"},
+    {word: "week", ch: "星期", icon: "🗓️"}, {word: "day", ch: "白天", icon: "☀️"}, {word: "night", ch: "夜晚", icon: "🌃"}, {word: "morning", ch: "早上", icon: "🌅"},
+    {word: "afternoon", ch: "下午", icon: "🌆"}, {word: "evening", ch: "傍晚", icon: "🌇"}, {word: "today", ch: "今天", icon: "📌"}, {word: "yesterday", ch: "昨天", icon: "⏳"},
+    {word: "tomorrow", ch: "明天", icon: "🚀"}, {word: "spring", ch: "春天", icon: "🌱"}, {word: "summer", ch: "夏天", icon: "🏖️"}, {word: "autumn", ch: "秋天", icon: "🍁"},
+    {word: "winter", ch: "冬天", icon: "☃️"}, {word: "weekend", ch: "週末", icon: "🎉"}, {word: "now", ch: "現在", icon: "🔔"}, {word: "hour", ch: "小時", icon: "⏳"},
+    {word: "happy", ch: "快樂的", icon: "😄"}, {word: "sad", ch: "傷心的", icon: "😭"}, {word: "angry", ch: "生氣的", icon: "😡"}, {word: "tired", ch: "疲倦的", icon: "😴"},
+    {word: "scared", ch: "害怕的", icon: "😱"}, {word: "good", ch: "好的", icon: "👍"}, {word: "bad", ch: "壞的", icon: "👎"}, {word: "beautiful", ch: "美麗的", icon: "🦋"},
+    {word: "ugly", ch: "醜陋的", icon: "👹"}, {word: "clean", ch: "乾淨的", icon: "✨"},
+    {word: "dirty", ch: "髒的", icon: "💩"}, {word: "new", ch: "新的", icon: "🆕"}, {word: "old", ch: "舊/老的", icon: "🧓"}, {word: "fast", ch: "快的", icon: "⚡"}, 
+    {word: "slow", ch: "慢的", icon: "🐢"}, {word: "easy", ch: "容易的", icon: "💡"}, {word: "hard", ch: "困難的", icon: "🧩"}, {word: "heavy", ch: "重的", icon: "🏋️"}, 
+    {word: "light", ch: "輕的", icon: "🪶"}, {word: "brave", ch: "勇敢的", icon: "🦁"}, {word: "run", ch: "跑步", icon: "開跑"}, {word: "jump", ch: "跳躍", icon: "🦘"}, 
+    {word: "walk", ch: "走路", icon: "🚶"}, {word: "swim", ch: "游泳", icon: "🏊"}, {word: "fly", ch: "飛翔", icon: "🦅"}, {word: "dance", ch: "跳舞", icon: "💃"}, 
+    {word: "sing", ch: "唱歌", icon: "🎤"}, {word: "play", ch: "玩耍", icon: "🎮"}, {word: "eat", ch: "吃", icon: "🍔"}, {word: "drink", ch: "喝", icon: "🥤"}, 
+    {word: "sleep", ch: "睡覺", icon: "🛌"}, {word: "wash", ch: "洗", icon: "🧼"}, {word: "open", ch: "打開", icon: "🔓"}, {word: "close", ch: "關上", icon: "🔒"}, 
+    {word: "push", ch: "推", icon: "🫸"}, {word: "pull", ch: "拉", icon: "🫷"}, {word: "climb", ch: "攀爬", icon: "🧗"}, {word: "ride", ch: "騎車", icon: "🚴"}, 
+    {word: "cook", ch: "煮飯", icon: "🍳"}, {word: "cry", ch: "哭泣", icon: "😢"}, {word: "see", ch: "看見", icon: "👓"}, {word: "look", ch: "看", icon: "👀"}, 
+    {word: "hear", ch: "聽見", icon: "📢"}, {word: "listen", ch: "聽", icon: "🎧"}, {word: "speak", ch: "說話", icon: "🗣️"}, {word: "say", ch: "說", icon: "💬"}, 
+    {word: "talk", ch: "交談", icon: "🗣️"}, {word: "read", ch: "閱讀", icon: "📚"}, {word: "write", ch: "寫字", icon: "✍️"}, {word: "draw", ch: "畫畫", icon: "🎨"},
+    {word: "know", ch: "知道", icon: "🧠"}, {word: "think", ch: "思考", icon: "🤔"}, {word: "learn", ch: "學習", icon: "🎓"}, {word: "study", ch: "研讀", icon: "📖"}, 
+    {word: "love", ch: "愛", icon: "💖"}, {word: "like", ch: "喜歡", icon: "❤️"}, {word: "want", ch: "想要", icon: "🤲"}, {word: "help", ch: "幫助", icon: "⛑️"}, 
+    {word: "work", ch: "工作", icon: "💼"}, {word: "live", ch: "居住", icon: "⛺"}
+];
+
+let learnedWords = new Set();
+let currentQuestion = null;
+let currentOptions = [];
+let audioUnlocked = false; 
+
+function getCurrentStage() {
+    let totalLearned = learnedWords.size;
+    let stage = Math.floor(totalLearned / 50) + 1;
+    return Math.min(stage, 6);
+}
+
+function getCurrentStageWords() {
+    let currentStage = getCurrentStage();
+    let startIdx = (currentStage - 1) * 50;
+    let endIdx = currentStage * 50;
+    return wordBank.slice(startIdx, endIdx);
+}
+
+function initGame() {
+    let savedData = localStorage.getItem("wordPetSaveData");
+    if (savedData) {
+        try {
+            let parsedArray = JSON.parse(savedData);
+            learnedWords = new Set(parsedArray);
+        } catch (e) {
+            learnedWords = new Set();
+        }
+    }
+    generateQuestion();
+    updateBagUI();
+}
+
+function saveGame() {
+    let dataArray = Array.from(learnedWords);
+    localStorage.setItem("wordPetSaveData", JSON.stringify(dataArray));
+}
+
+function resetGame() {
+    if (confirm("確定要清除所有進度重新開始嗎？")) {
+        localStorage.removeItem("wordPetSaveData");
+        learnedWords = new Set();
+        initGame();
+    }
+}
+
+function generateQuestion() {
+    if (learnedWords.size >= wordBank.length) {
+        document.getElementById("word-text").innerText = "🏆 大滿貫！";
+        document.getElementById("monster-emoji").innerText = "👑";
+        document.getElementById("feedback-text").innerText = "恭喜成為終極單字大師！";
+        document.getElementById("current-stage-display").innerText = "🎉 恭喜全部通關！";
+        return;
+    }
+
+    let stageWords = getCurrentStageWords();
+    let unlearned = stageWords.filter(w => !learnedWords.has(w.word));
+    if (unlearned.length === 0) unlearned = stageWords; 
+    
+    currentQuestion = unlearned[Math.floor(Math.random() * unlearned.length)];
+    document.getElementById("monster-emoji").innerText = currentQuestion.icon;
+    
+    let wrongOptions = wordBank.filter(w => w.ch !== currentQuestion.ch).map(w => w.ch);
+    wrongOptions.sort(() => 0.5 - Math.random());
+    currentOptions = [currentQuestion.ch, wrongOptions[0], wrongOptions[1], wrongOptions[2]];
+    currentOptions.sort(() => 0.5 - Math.random()); 
+    
+    document.getElementById("word-text").innerText = currentQuestion.word;
+    let buttons = document.querySelectorAll(".option-btn");
+    buttons.forEach((btn, index) => {
+        btn.innerText = currentOptions[index];
+    });
+
+    speakWord();
+}
+
+function speakWord() {
+    if (!currentQuestion) return;
+    let utterance = new SpeechSynthesisUtterance(currentQuestion.word);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.85; 
+    window.speechSynthesis.speak(utterance);
+}
+
+function unlockAudioContext() {
+    if (!audioUnlocked) {
+        audioUnlocked = true;
+        speakWord(); 
+    }
+}
+
+function checkAnswer(selectedIndex) {
+    let feedback = document.getElementById("feedback-text");
+    if (currentOptions[selectedIndex] === currentQuestion.ch) {
+        feedback.style.color = "#4ECDC4";
+        feedback.innerText = `成功收伏【${currentQuestion.icon} ${currentQuestion.word}】！`;
+        learnedWords.add(currentQuestion.word);
+        saveGame();
+    } else {
+        feedback.style.color = "#FF6B6B";
+        feedback.innerText = `逃跑了！【${currentQuestion.word}】是 ${currentQuestion.ch}`;
+    }
+    
+    updateBagUI();
+    setTimeout(() => {
+        feedback.innerText = "";
+        generateQuestion();
+    }, 1500);
+}
+
+function updateBagUI() {
+    let totalCount = learnedWords.size;
+    let currentStage = getCurrentStage();
+    
+    document.getElementById("current-stage-display").innerText = `⭐ 第 ${currentStage} 關`;
+    
+    let stageCount = totalCount % 50;
+    let displayStageScore = (totalCount > 0 && stageCount === 0 && totalCount < 300) ? 50 : stageCount;
+    document.getElementById("stage-score").innerText = displayStageScore;
+    
+    document.getElementById("bag-count").innerText = `${totalCount} / 300 隻`;
+    
+    let bagGrid = document.getElementById("bag-grid");
+    bagGrid.innerHTML = ""; 
+    
+    wordBank.forEach(w => {
+        if (learnedWords.has(w.word)) {
+            let slot = document.createElement("div");
+            slot.className = "bag-slot";
+            slot.innerText = w.icon;
+            
+            let tooltip = document.createElement("span");
+            tooltip.className = "tooltip";
+            tooltip.innerText = `${w.word} (${w.ch})`;
+            
+            slot.appendChild(tooltip);
+            bagGrid.appendChild(slot);
+        }
+    });
+}
+
+initGame();
+</script>
+
+</body>
+</html>
