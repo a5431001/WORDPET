@@ -172,7 +172,7 @@
         .reset-btn:hover { color: #EF4444; }
     </style>
 </head>
-<body>
+<body onclick="unlockAudioContext()">
 
 <div class="game-container">
     <h1>⚡ 英文單字收伏戰 ⚡</h1>
@@ -187,7 +187,7 @@
 
     <div class="quiz-box">
         <div id="word-text" class="word-display">---</div>
-        <button onclick="speakWord()" class="audio-btn">🔊 聽怪物叫聲 (發音)</button>
+        <button onclick="speakWord()" class="audio-btn">🔊 再聽一次怪物叫聲</button>
         
         <div class="options-grid">
             <button class="option-btn" onclick="checkAnswer(0)">選項 1</button>
@@ -306,6 +306,7 @@ const wordBank = [
 let learnedWords = new Set();
 let currentQuestion = null;
 let currentOptions = [];
+let audioUnlocked = false; // 追蹤瀏覽器語音是否解鎖
 
 function initGame() {
     document.getElementById("total-words").innerText = wordBank.length;
@@ -359,6 +360,9 @@ function generateQuestion() {
     buttons.forEach((btn, index) => {
         btn.innerText = currentOptions[index];
     });
+
+    // 📣 【關鍵修改】產生題目的同時自動播放唸法
+    speakWord();
 }
 
 function speakWord() {
@@ -367,6 +371,14 @@ function speakWord() {
     utterance.lang = 'en-US';
     utterance.rate = 0.85; 
     window.speechSynthesis.speak(utterance);
+}
+
+// 🔑 瀏覽器安全性解鎖機制：使用者一碰螢幕就立刻允許發音並補唸
+function unlockAudioContext() {
+    if (!audioUnlocked) {
+        audioUnlocked = true;
+        speakWord(); 
+    }
 }
 
 function checkAnswer(selectedIndex) {
