@@ -54,7 +54,7 @@
             display: inline-block;
         }
         @keyframes wild_bounce {
-            0%, 100% { transform: translateY(0); }
+            0%, 100 canvas { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
         .quiz-box {
@@ -184,7 +184,7 @@ const wordBank = [
     {word: "cloud", ch: "雲", icon: "☁️"}, {word: "rain", ch: "下雨", icon: "🌧️"}, {word: "wind", ch: "風", icon: "💨"}, {word: "snow", ch: "雪", icon: "❄️"},
     {word: "sea", ch: "大海", icon: "🌊"}, {word: "river", ch: "河流", icon: "🏞️"}, {word: "tree", ch: "樹木", icon: "🌳"}, {word: "flower", ch: "花朵", icon: "🌻"},
     {word: "grass", ch: "草", icon: "🌱"}, {word: "stone", ch: "石頭", icon: "🪨"}, {word: "hot", ch: "熱的", icon: "🥵"}, {word: "cold", ch: "冷的", icon: "🥶"},
-    {word: "warm", ch: "溫暖的", icon: "🥰"}, {word: "cool", ch: "涼爽的", icon: "😎"}, {word: "weather", ch: "天氣", icon: "🌈"}, {word: "air", ch: "空氣", icon: "🍃"},
+    {word: "warm", ch: "溫慢的", icon: "🥰"}, {word: "cool", ch: "涼爽的", icon: "😎"}, {word: "weather", ch: "天氣", icon: "🌈"}, {word: "air", ch: "空氣", icon: "🍃"},
     {word: "family", ch: "家人", icon: "👨‍👩‍👧‍👦"}, {word: "father", ch: "爸爸", icon: "👨"}, {word: "mother", ch: "媽媽", icon: "👩"}, {word: "brother", ch: "兄弟", icon: "👦"},
     {word: "sister", ch: "姊妹", icon: "👧"}, {word: "grandfather", ch: "爺爺/外公", icon: "👴"}, {word: "grandmother", ch: "奶奶/外婆", icon: "👵"}, {word: "uncle", ch: "叔伯舅舅", icon: "🧔"},
     {word: "aunt", ch: "姑姑阿姨", icon: "👩‍🦰"}, {word: "cousin", ch: "堂表兄弟", icon: "🧑"}, {word: "son", ch: "兒子", icon: "👶"}, {word: "daughter", ch: "女兒", icon: "👱‍♀️"},
@@ -238,7 +238,7 @@ const wordBank = [
     {word: "circle", ch: "圓形", icon: "⭕"}, {word: "square", ch: "正方形", icon: "⬛"}, {word: "line", ch: "線條", icon: "➖"}, {word: "star", ch: "星形", icon: "⭐"},
     {word: "big", ch: "大的", icon: "🐳"}, {word: "small", ch: "小的", icon: "🐜"}, {word: "long", ch: "長的", icon: "🐍"}, {word: "short", ch: "短/矮", icon: "🐥"},
     {word: "time", ch: "時間", icon: "⌚"}, {word: "clock", ch: "時鐘", icon: "⏰"}, {word: "year", ch: "年", icon: "📅"}, {word: "month", ch: "月", icon: "🌙"},
-    {word: "week", ch: "星期", icon: "🗓️"}, {word: "day", ch: "白天", icon: "☀️"}, {word: "night", ch: "夜晚", icon: "🌃"}, {word: "morning", ch: "早上", icon: "🌅"},
+    {word: "week", ch: "星期", icon: "🗓️"}, {word: "day", ch: "白天", icon: "☀️"}, {word: "night", ch: "夜晚", icon: "開學"}, {word: "morning", ch: "早上", icon: "🌅"},
     {word: "afternoon", ch: "下午", icon: "🌆"}, {word: "evening", ch: "傍晚", icon: "🌇"}, {word: "today", ch: "今天", icon: "📌"}, {word: "yesterday", ch: "昨天", icon: "⏳"},
     {word: "tomorrow", ch: "明天", icon: "🚀"}, {word: "spring", ch: "春天", icon: "🌱"}, {word: "summer", ch: "夏天", icon: "🏖️"}, {word: "autumn", ch: "秋天", icon: "🍁"},
     {word: "winter", ch: "冬天", icon: "☃️"}, {word: "weekend", ch: "週末", icon: "🎉"}, {word: "now", ch: "現在", icon: "🔔"}, {word: "hour", ch: "小時", icon: "⏳"},
@@ -247,7 +247,7 @@ const wordBank = [
     {word: "ugly", ch: "醜陋的", icon: "👹"}, {word: "clean", ch: "乾淨的", icon: "✨"},
     {word: "dirty", ch: "髒的", icon: "💩"}, {word: "new", ch: "新的", icon: "🆕"}, {word: "old", ch: "舊/老的", icon: "🧓"}, {word: "fast", ch: "快的", icon: "⚡"}, 
     {word: "slow", ch: "慢的", icon: "🐢"}, {word: "easy", ch: "容易的", icon: "💡"}, {word: "hard", ch: "困難的", icon: "🧩"}, {word: "heavy", ch: "重的", icon: "🏋️"}, 
-    {word: "light", ch: "輕的", icon: "🪶"}, {word: "brave", ch: "勇敢的", icon: "🦁"}, {word: "run", ch: "跑步", icon: "開跑"}, {word: "jump", ch: "跳躍", icon: "🦘"}, 
+    {word: "light", ch: "輕的", icon: "🪶"}, {word: "brave", ch: "勇敢的", icon: "🦁"}, {word: "run", ch: "跑步", icon: "🏃"}, {word: "jump", ch: "跳躍", icon: "🦘"}, 
     {word: "walk", ch: "走路", icon: "🚶"}, {word: "swim", ch: "游泳", icon: "🏊"}, {word: "fly", ch: "飛翔", icon: "🦅"}, {word: "dance", ch: "跳舞", icon: "💃"}, 
     {word: "sing", ch: "唱歌", icon: "🎤"}, {word: "play", ch: "玩耍", icon: "🎮"}, {word: "eat", ch: "吃", icon: "🍔"}, {word: "drink", ch: "喝", icon: "🥤"}, 
     {word: "sleep", ch: "睡覺", icon: "🛌"}, {word: "wash", ch: "洗", icon: "🧼"}, {word: "open", ch: "打開", icon: "🔓"}, {word: "close", ch: "關上", icon: "🔒"}, 
