@@ -54,7 +54,7 @@
             display: inline-block;
         }
         @keyframes wild_bounce {
-            0%, 100 canvas { transform: translateY(0); }
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
         .quiz-box {
@@ -180,6 +180,7 @@
 
 <script>
 const wordBank = [
+    // === 第 1 關 (1-50) ===
     {word: "sun", ch: "太陽", icon: "☀️"}, {word: "moon", ch: "月亮", icon: "🌙"}, {word: "star", ch: "星星", icon: "⭐"}, {word: "sky", ch: "天空", icon: "🌌"},
     {word: "cloud", ch: "雲", icon: "☁️"}, {word: "rain", ch: "下雨", icon: "🌧️"}, {word: "wind", ch: "風", icon: "💨"}, {word: "snow", ch: "雪", icon: "❄️"},
     {word: "sea", ch: "大海", icon: "🌊"}, {word: "river", ch: "河流", icon: "🏞️"}, {word: "tree", ch: "樹木", icon: "🌳"}, {word: "flower", ch: "花朵", icon: "🌻"},
@@ -193,11 +194,13 @@ const wordBank = [
     {word: "dog", ch: "狗狗", icon: "🐶"}, {word: "cat", ch: "貓咪", icon: "🐱"}, {word: "rabbit", ch: "兔子", icon: "🐰"}, {word: "bird", ch: "小鳥", icon: "🐦"},
     {word: "fish", ch: "魚", icon: "🐟"}, {word: "monkey", ch: "猴子", icon: "🐵"}, {word: "elephant", ch: "大象", icon: "🐘"}, {word: "lion", ch: "獅子", icon: "🦁"},
     {word: "tiger", ch: "老虎", icon: "🐯"}, {word: "bear", ch: "熊", icon: "🐻"},
+
+    // === 第 2 關 (51-100) ===
     {word: "horse", ch: "馬", icon: "🐴"}, {word: "cow", ch: "乳牛", icon: "🐮"}, {word: "pig", ch: "豬", icon: "🐷"}, {word: "sheep", ch: "綿羊", icon: "🐑"}, 
     {word: "duck", ch: "鴨子", icon: "🦆"}, {word: "chicken", ch: "雞", icon: "🐔"}, {word: "mouse", ch: "老鼠", icon: "🐭"}, {word: "frog", ch: "青蛙", icon: "🐸"}, 
     {word: "bee", ch: "蜜蜂", icon: "🐝"}, {word: "ant", ch: "螞蟻", icon: "🐜"}, {word: "rice", ch: "米飯", icon: "🍚"}, {word: "bread", ch: "麵包", icon: "🍞"}, 
-    {word: "noodles", ch: "麵條", icon: "🍜"}, {word: "soup", ch: "湯", icon: "🥣"}, {word: "meat", ch: "肉", icon: "🥩"}, {word: "chicken", ch: "雞肉", icon: "🍗"}, 
-    {word: "fish", ch: "魚肉", icon: "🍤"}, {word: "egg", ch: "蛋", icon: "🍳"}, {word: "cake", ch: "蛋糕", icon: "🍰"}, {word: "cookie", ch: "餅乾", icon: "🍪"},
+    {word: "noodles", ch: "麵條", icon: "🍜"}, {word: "soup", ch: "湯", icon: "🥣"}, {word: "meat", ch: "肉", icon: "🥩"}, {word: "chicken meat", ch: "雞肉", icon: "🍗"}, 
+    {word: "fish meat", ch: "魚肉", icon: "🍤"}, {word: "egg", ch: "蛋", icon: "🍳"}, {word: "cake", ch: "蛋糕", icon: "🍰"}, {word: "cookie", ch: "餅乾", icon: "🍪"},
     {word: "ice cream", ch: "冰淇淋", icon: "🍦"}, {word: "candy", ch: "糖果", icon: "🍬"}, {word: "milk", ch: "牛奶", icon: "🥛"}, {word: "water", ch: "水", icon: "💧"}, 
     {word: "juice", ch: "果汁", icon: "🧃"}, {word: "tea", ch: "茶", icon: "🍵"}, {word: "breakfast", ch: "早餐", icon: "🥞"}, {word: "lunch", ch: "午餐", icon: "🥪"}, 
     {word: "dinner", ch: "晚餐", icon: "🍽️"}, {word: "food", ch: "食物", icon: "🍕"}, {word: "apple", ch: "蘋果", icon: "🍎"}, {word: "banana", ch: "香蕉", icon: "🍌"}, 
@@ -206,6 +209,8 @@ const wordBank = [
     {word: "potato", ch: "馬鈴薯", icon: "🥔"}, {word: "carrot", ch: "紅蘿蔔", icon: "🥕"}, {word: "onion", ch: "洋蔥", icon: "🧅"}, {word: "corn", ch: "玉米", icon: "🌽"}, 
     {word: "fruit", ch: "水果", icon: "🍒"}, {word: "vegetable", ch: "蔬菜", icon: "🥦"}, {word: "sweet", ch: "甜的", icon: "🍯"}, {word: "sour", ch: "酸的", icon: "🧪"}, 
     {word: "yummy", ch: "美味的", icon: "😋"}, {word: "hungry", ch: "飢餓的", icon: "🤤"},
+
+    // === 第 3 關 (101-150) ===
     {word: "school", ch: "學校", icon: "🏫"}, {word: "class", ch: "班級", icon: "👥"}, {word: "teacher", ch: "老師", icon: "👩‍🏫"}, {word: "student", ch: "學生", icon: "🧑‍🎓"},
     {word: "book", ch: "書本", icon: "📖"}, {word: "pencil", ch: "鉛筆", icon: "✏️"}, {word: "pen", ch: "原子筆", icon: "🖊️"}, {word: "eraser", ch: "橡皮擦", icon: "🧽"},
     {word: "ruler", ch: "尺", icon: "📏"}, {word: "bag", ch: "書包", icon: "🎒"}, {word: "desk", ch: "書桌", icon: "🪑"}, {word: "chair", ch: "椅子", icon: "🪘"},
@@ -219,6 +224,8 @@ const wordBank = [
     {word: "home", ch: "家", icon: "🏡"}, {word: "house", ch: "房子", icon: "🏠"}, {word: "room", ch: "房間", icon: "🚪"}, {word: "bedroom", ch: "臥室", icon: "🛏️"},
     {word: "bathroom", ch: "浴室", icon: "🛁"}, {word: "kitchen", ch: "廚房", icon: "🍳"}, {word: "door", ch: "門", icon: "🚪"}, {word: "window", ch: "窗戶", icon: "🪟"},
     {word: "bed", ch: "床", icon: "🛏️"}, {word: "table", ch: "桌子", icon: "🪟"},
+
+    // === 第 4 關 (151-200) ===
     {word: "tv", ch: "電視", icon: "📺"}, {word: "telephone", ch: "電話", icon: "☎️"}, {word: "clothes", ch: "衣服", icon: "👕"}, {word: "shirt", ch: "襯衫", icon: "👔"}, 
     {word: "pants", ch: "褲子", icon: "👖"}, {word: "skirt", ch: "裙子", icon: "👗"}, {word: "coat", ch: "外套", icon: "🧥"}, {word: "shoes", ch: "鞋子", icon: "👟"}, 
     {word: "socks", ch: "襪子", icon: "🧦"}, {word: "hat", ch: "帽子", icon: "🎩"}, {word: "car", ch: "汽車", icon: "🚗"}, {word: "bus", ch: "公車", icon: "🚌"}, 
@@ -232,19 +239,23 @@ const wordBank = [
     {word: "eleven", ch: "十一", icon: "♊"}, {word: "twelve", ch: "十二", icon: "🕛"}, {word: "thirteen", ch: "十三", icon: "🍀"}, {word: "fourteen", ch: "十四", icon: "⏳"}, 
     {word: "fifteen", ch: "十五", icon: "🏮"}, {word: "sixteen", ch: "十六", icon: "🔮"}, {word: "seventeen", ch: "十七", icon: "⚡"}, {word: "eighteen", ch: "十八", icon: "🔞"}, 
     {word: "nineteen", ch: "十九", icon: "🍷"}, {word: "twenty", ch: "二十", icon: "🪙"},
+
+    // === 第 5 關 (201-250) ===
     {word: "red", ch: "紅色", icon: "🔴"}, {word: "blue", ch: "藍色", icon: "🔵"}, {word: "yellow", ch: "黃色", icon: "🟡"}, {word: "green", ch: "綠色", icon: "🟢"},
     {word: "orange", ch: "橘色", icon: "🟠"}, {word: "purple", ch: "紫色", icon: "🟣"}, {word: "pink", ch: "粉紅色", icon: "🌸"}, {word: "black", ch: "黑色", icon: "⚫"},
     {word: "white", ch: "白色", icon: "⚪"}, {word: "brown", ch: "棕色", icon: "🟤"}, {word: "gray", ch: "灰色", icon: "🪙"}, {word: "color", ch: "顏色", icon: "🎨"},
     {word: "circle", ch: "圓形", icon: "⭕"}, {word: "square", ch: "正方形", icon: "⬛"}, {word: "line", ch: "線條", icon: "➖"}, {word: "star", ch: "星形", icon: "⭐"},
     {word: "big", ch: "大的", icon: "🐳"}, {word: "small", ch: "小的", icon: "🐜"}, {word: "long", ch: "長的", icon: "🐍"}, {word: "short", ch: "短/矮", icon: "🐥"},
     {word: "time", ch: "時間", icon: "⌚"}, {word: "clock", ch: "時鐘", icon: "⏰"}, {word: "year", ch: "年", icon: "📅"}, {word: "month", ch: "月", icon: "🌙"},
-    {word: "week", ch: "星期", icon: "🗓️"}, {word: "day", ch: "白天", icon: "☀️"}, {word: "night", ch: "夜晚", icon: "開學"}, {word: "morning", ch: "早上", icon: "🌅"},
+    {word: "week", ch: "星期", icon: "🗓️"}, {word: "day", ch: "白天", icon: "☀️"}, {word: "night", ch: "夜晚", icon: "🌌"}, {word: "morning", ch: "早上", icon: "🌅"},
     {word: "afternoon", ch: "下午", icon: "🌆"}, {word: "evening", ch: "傍晚", icon: "🌇"}, {word: "today", ch: "今天", icon: "📌"}, {word: "yesterday", ch: "昨天", icon: "⏳"},
     {word: "tomorrow", ch: "明天", icon: "🚀"}, {word: "spring", ch: "春天", icon: "🌱"}, {word: "summer", ch: "夏天", icon: "🏖️"}, {word: "autumn", ch: "秋天", icon: "🍁"},
     {word: "winter", ch: "冬天", icon: "☃️"}, {word: "weekend", ch: "週末", icon: "🎉"}, {word: "now", ch: "現在", icon: "🔔"}, {word: "hour", ch: "小時", icon: "⏳"},
     {word: "happy", ch: "快樂的", icon: "😄"}, {word: "sad", ch: "傷心的", icon: "😭"}, {word: "angry", ch: "生氣的", icon: "😡"}, {word: "tired", ch: "疲倦的", icon: "😴"},
     {word: "scared", ch: "害怕的", icon: "😱"}, {word: "good", ch: "好的", icon: "👍"}, {word: "bad", ch: "壞的", icon: "👎"}, {word: "beautiful", ch: "美麗的", icon: "🦋"},
     {word: "ugly", ch: "醜陋的", icon: "👹"}, {word: "clean", ch: "乾淨的", icon: "✨"},
+
+    // === 第 6 關 (251-300) ===
     {word: "dirty", ch: "髒的", icon: "💩"}, {word: "new", ch: "新的", icon: "🆕"}, {word: "old", ch: "舊/老的", icon: "🧓"}, {word: "fast", ch: "快的", icon: "⚡"}, 
     {word: "slow", ch: "慢的", icon: "🐢"}, {word: "easy", ch: "容易的", icon: "💡"}, {word: "hard", ch: "困難的", icon: "🧩"}, {word: "heavy", ch: "重的", icon: "🏋️"}, 
     {word: "light", ch: "輕的", icon: "🪶"}, {word: "brave", ch: "勇敢的", icon: "🦁"}, {word: "run", ch: "跑步", icon: "🏃"}, {word: "jump", ch: "跳躍", icon: "🦘"}, 
@@ -265,10 +276,19 @@ let currentQuestion = null;
 let currentOptions = [];
 let audioUnlocked = false; 
 
+// 🎯 【智慧型解鎖核心】自動比對每關單字池是否抓滿
 function getCurrentStage() {
-    let totalLearned = learnedWords.size;
-    let stage = Math.floor(totalLearned / 50) + 1;
-    return Math.min(stage, 6);
+    for (let s = 1; s <= 6; s++) {
+        let startIdx = (s - 1) * 50;
+        let endIdx = s * 50;
+        let stagePool = wordBank.slice(startIdx, endIdx);
+        // 檢查這一關是不是還有沒被抓到的字
+        let hasUnlearned = stagePool.some(w => !learnedWords.has(w.word));
+        if (hasUnlearned) {
+            return s; // 只要還有字沒抓到，就留在此關
+        }
+    }
+    return 6; // 全都抓完了就停在第 6 關複習
 }
 
 function getCurrentStageWords() {
@@ -375,10 +395,13 @@ function updateBagUI() {
     
     document.getElementById("current-stage-display").innerText = `⭐ 第 ${currentStage} 關`;
     
-    let stageCount = totalCount % 50;
-    let displayStageScore = (totalCount > 0 && stageCount === 0 && totalCount < 300) ? 50 : stageCount;
-    document.getElementById("stage-score").innerText = displayStageScore;
+    // 計算此關已經收伏了幾隻
+    let startIdx = (currentStage - 1) * 50;
+    let endIdx = currentStage * 50;
+    let currentStagePool = wordBank.slice(startIdx, endIdx);
+    let currentStageLearnedCount = currentStagePool.filter(w => learnedWords.has(w.word)).length;
     
+    document.getElementById("stage-score").innerText = currentStageLearnedCount;
     document.getElementById("bag-count").innerText = `${totalCount} / 300 隻`;
     
     let bagGrid = document.getElementById("bag-grid");
